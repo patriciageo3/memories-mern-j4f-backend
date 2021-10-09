@@ -1,5 +1,5 @@
-import PostMessage from '../models/postMessage.js'
 import mongoose from 'mongoose';
+import PostMessage from '../models/postMessage.js';
 
 export const getPosts = async (req, res) => {
     try {
@@ -9,7 +9,7 @@ export const getPosts = async (req, res) => {
     } catch (error) {
         res.status(404).json({ message: error.message });
     }
-}
+};
 
 export const createPost = async (req, res) => {
     const post = req.body;
@@ -23,7 +23,7 @@ export const createPost = async (req, res) => {
     } catch (error) {
         res.status(409).json({ message: error.message });
     }
-}
+};
 
 export const updatePost = async (req, res) => {
     const { id: _id } = req.params;
@@ -33,7 +33,7 @@ export const updatePost = async (req, res) => {
     
     const updatedPost = await PostMessage.findByIdAndUpdate(_id, newPost, { new: true });
     res.status(200).json(updatedPost);
-}
+};
 
 export const deletePost = async (req, res) => {
     const { id } = req.params;
@@ -43,7 +43,7 @@ export const deletePost = async (req, res) => {
     await PostMessage.findByIdAndRemove(id);
 
     res.status(200).json({ message: "Post deleted successfully!" });
-}
+};
 
 export const updateLikeCount = async (req, res) => {
     const { id } = req.params;
@@ -62,4 +62,4 @@ export const updateLikeCount = async (req, res) => {
 
     const updatedPost = await PostMessage.findByIdAndUpdate(id, postWithIncrementedLikes, {new: true});
     res.status(200).json(updatedPost);
-}
+};
