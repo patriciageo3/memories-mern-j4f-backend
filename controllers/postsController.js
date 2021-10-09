@@ -47,19 +47,21 @@ export const deletePost = async (req, res) => {
 
 export const updateLikeCount = async (req, res) => {
     const { id } = req.params;
-    const currentPost = req.body;
+    const currentUserId = req.userId
+
+    if (!currentUserId) return res.status(401).json({ message: "Unauthorized" });
 
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No posts with id ${id}`);
 
-    const likeCount = ++currentPost.likeCount;
-    const postWithIncrementedLikes = {...currentPost, likeCount}
+    const currentPost = await PostMessage.findById(id);
 
-    // in the course, this was the solution:
-    // await PostMessage.findById to find the current post
-    // and then PostMessage.findByIdAndUpdate to over-write the post`s likes
-    // but I opted to pass the whole current post from the frontend instead
-    // because the service is too slow, so I saved one operation here
+    const index = currentPost.likes.findIndex(id => id === String(currentUserId));
+    if (index < 0) {
+        currentPost.likes.push(currentUserId);
+    } else {
+        currentPost.likes = currentPost.likes.filter(id => id !== String(currentUserId));
+    }
 
-    const updatedPost = await PostMessage.findByIdAndUpdate(id, postWithIncrementedLikes, {new: true});
+    const updatedPost = await PostMessage.findByIdAndUpdate(id, currentPost, {new: true});
     res.status(200).json(updatedPost);
 };
