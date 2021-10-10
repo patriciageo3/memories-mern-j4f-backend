@@ -20,7 +20,7 @@ export const signinUser = async (req, res) => {
         // 'patty' string provided here is just for testing purposes
         // this should be a secret string
         const token = jwt.sign({ email: existingUser.email, id: existingUser._id }, 'patty', { expiresIn });
-        res.status(200).json({ result: existingUser, token });
+        res.status(200).json({ profile: existingUser, token });
 
     } catch (error) {
 
@@ -30,23 +30,23 @@ export const signinUser = async (req, res) => {
 };
 
 export const signupUser = async (req, res) => {
-    const { body: { email, password, firstName, lastName, confirmPasword } } = req;
+    const { body: { email, password, firstName, lastName, confirmPassword } } = req;
 
     try {
 
         const existingUser = await User.findOne({email});
 
         if (existingUser) return res.status(400).json({message: "User already exists!"});
-        if (password !== confirmedPassword) return res.status(400).json({message: "Passwords don`t match!"});
+        if (password !== confirmPassword) return res.status(400).json({message: "Passwords don`t match!"});
 
         const hashedPassword = await bcrypt.hash(password, 12);
         const result = await User.create({
             email,
             password: hashedPassword,
-            name: `${firstName}, ${lastName}`
+            name: `${firstName} ${lastName}`
         });
         const token = jwt.sign({email: result.email, id: result._id}, 'patty', { expiresIn });
-        res.status(200).json({result, token});
+        res.status(200).json({profile: result, token});
 
      } catch (error) {
 
