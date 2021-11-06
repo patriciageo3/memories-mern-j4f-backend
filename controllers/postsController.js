@@ -37,6 +37,9 @@ export const updatePost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
     const { id } = req.params;
+    const currentUserId = req.userId
+
+    if (!currentUserId) return res.status(401).json({ message: "Unauthorized" });
 
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No posts with id ${id}`);
 
